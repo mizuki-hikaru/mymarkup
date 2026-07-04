@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from .mymarkup import render
+from .mymarkup import Context, Span, render
 
 
 def test_headings():
@@ -187,6 +187,10 @@ def test_inline_markup():
     assert render("`not closed") == "<p>`not closed</p>"
 
 
+def test_span_line_breaks():
+    assert Span.parse("line one\nline two").render(Context()) == "line one<br>line two"
+
+
 def test_empty_or_invalid_inline_markup():
     assert render("**") == "<p>**</p>"
     assert render("``") == "<p>``</p>"
@@ -335,6 +339,7 @@ def main():
     test_mixed_lists()
     test_list_item_continuation()
     test_inline_markup()
+    test_span_line_breaks()
     test_empty_or_invalid_inline_markup()
     test_regular_links()
     test_bare_urls()
