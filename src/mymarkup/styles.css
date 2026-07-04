@@ -95,6 +95,22 @@ ul, ol { padding-left: 1.4rem; }
 li + li { margin-top: 0.35rem; }
 li > p { margin: 0.3rem 0; }
 
+ul {
+  list-style: none;
+  padding-left: 1.2rem;
+}
+
+ul li {
+  position: relative;
+}
+
+ul li::before {
+  content: "-";
+  position: absolute;
+  left: -1rem;
+  color: inherit;
+}
+
 a, a:visited {
   color: var(--link);
   text-underline-offset: 0.16em;
