@@ -188,7 +188,7 @@ def test_inline_markup():
 
 
 def test_span_line_breaks():
-    assert Span.parse("line one\nline two").render(Context()) == "line one<br>line two"
+    assert Span.parse("line one\\nline two").render(Context()) == "line one<br>line two"
 
 
 def test_empty_or_invalid_inline_markup():

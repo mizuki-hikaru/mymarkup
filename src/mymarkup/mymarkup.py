@@ -487,7 +487,7 @@ class URL(InlineToken):
 class LineBreak(InlineToken):
     @classmethod
     def parse(cls, line: str, i: int) -> tuple[Optional["LineBreak"], int]:
-        return (LineBreak(), i + 1) if line[i] == "\n" else (None, i)
+        return (LineBreak(), i + 2) if line[i:i+2] == "\\n" else (None, i)
 
     def render(self, context: Context):
         return "<br>"
