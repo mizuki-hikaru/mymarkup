@@ -84,7 +84,9 @@ def convert_markup_to_html(root_directory: Path, relative_path: Path) -> None:
 
 
 def rm_html_files(root_directory: Path) -> int:
-    ignore_lines = [x.strip() for x in Path(".gitignore").read_text(encoding="utf-8").split("\n") if x.strip()]
+    gitignore_path = Path(".gitignore")
+    gitignore = gitignore_path.read_text(encoding="utf-8") if gitignore_path.exists() else ""
+    ignore_lines = [x.strip() for x in gitignore.split("\n") if x.strip()]
     count = 0
     for path in root_directory.rglob("*.html"):
         if any([part in ignore_lines for part in path.parts]):
