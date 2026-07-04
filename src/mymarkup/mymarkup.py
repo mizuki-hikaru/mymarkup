@@ -272,6 +272,67 @@ class BlockQuote(BlockToken):
 
 
 @dataclass
+class TableCell(Token):
+    text: Span
+    header: bool
+
+    def render(self, context: Context):
+        tag = "th" if self.header else "td"
+        return f"<{tag}>{self.text.render(context)}</{tag}>"
+
+
+@dataclass
+class TableRow(Token):
+    cells: list[TableCell]
+
+    @classmethod
+    def parse(cls, line: str) -> Optional["TableRow"]:
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            return None
+
+        parts = re.split(r"(\|\|?)", stripped)
+        if len(parts) < 5 or parts[0] != "" or parts[-1] != "":
+            return None
+
+        cells = []
+        for i in range(2, len(parts) - 1, 2):
+            left = parts[i - 1]
+            text = parts[i]
+            right = parts[i + 1]
+            if left not in {"|", "||"} or right not in {"|", "||"}:
+                return None
+            cells.append(TableCell(Span.parse(text.strip()), left == right == "||"))
+
+        return TableRow(cells) if cells else None
+
+    def render(self, context: Context):
+        cells = "".join([cell.render(context) for cell in self.cells])
+        return f"<tr>{cells}</tr>"
+
+
+@dataclass
+class Table(BlockToken):
+    rows: list[TableRow]
+
+    @classmethod
+    def parse(cls, lines: list[str], i: int) -> tuple[Optional["Table"], int]:
+        rows = []
+        j = i
+        while j < len(lines):
+            row = TableRow.parse(lines[j])
+            if not row:
+                break
+            rows.append(row)
+            j += 1
+        return (Table(rows), j) if rows else (None, i)
+
+    def render(self, context: Context):
+        rows = "".join([row.render(context) for row in self.rows])
+        return f"<table>{rows}</table>"
+
+
+@dataclass
 class Paragraph(BlockToken):
     paragraph_lines: list[Span]
     align: str

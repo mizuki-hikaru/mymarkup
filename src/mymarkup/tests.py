@@ -289,6 +289,34 @@ def test_blockquotes():
     )
 
 
+def test_tables():
+    assert render(
+        dedent("""
+            || header || header2 ||
+            | value | value2 |
+            | value3 | value4 |
+        """).strip()
+    ) == (
+        "<table>"
+        "<tr><th>header</th><th>header2</th></tr>"
+        "<tr><td>value</td><td>value2</td></tr>"
+        "<tr><td>value3</td><td>value4</td></tr>"
+        "</table>"
+    )
+
+    assert render(
+        dedent("""
+            || header || value |
+            || header2 || value2 |
+        """).strip()
+    ) == (
+        "<table>"
+        "<tr><th>header</th><td>value</td></tr>"
+        "<tr><th>header2</th><td>value2</td></tr>"
+        "</table>"
+    )
+
+
 def test_xss():
     assert render("<script>alert(1)</script>") == (
         "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>"
@@ -315,6 +343,7 @@ def main():
     test_variable_length_code_fences()
     test_horizontal_rules()
     test_blockquotes()
+    test_tables()
     test_xss()
 
     print("All tests passed")
