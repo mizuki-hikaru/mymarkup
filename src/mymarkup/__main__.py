@@ -46,13 +46,15 @@ class Context(mymarkup.Context):
             current = current / name
             href_parts.append(name)
             if current.is_dir():
-                source = (current / "index.mu").read_text(encoding="utf-8")
-                title = mymarkup.metadata(source).title
+                metadata_path = (current / "index.mu")
             elif current.suffix == ".mu":
-                source = current.read_text(encoding="utf-8")
-                title = mymarkup.metadata(source).title
+                metadata_path = current
             else:
                 raise Exception(f"Unknown file type when generating breadcrumbs: {current}")
+            if not metadata_path.exists():
+                raise Exception(f"File does not exist: {metadata_path}")
+            source = metadata_path.read_text(encoding="utf-8")
+            title = mymarkup.metadata(source).title
             href = "/" + "/".join([escape(x) for x in href_parts]) + "/"
             breadcrumbs.append((title, href))
         html = '<div class="breadcrumbs">'
